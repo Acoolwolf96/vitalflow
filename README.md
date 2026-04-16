@@ -37,9 +37,8 @@ A real-time streaming pipeline that simulates patient breathing data, detects an
   
 ## Architecture Diagram
 
-```mermaid
 flowchart TD
-    subgraph Kubernetes Cluster "K3d Cluster (vitalflow)"
+    subgraph k3d["K3d Cluster (vitalflow)"]
         
         Simulator[Simulator Pod]
         Redis[Redis Pod<br/>Streams: bio-signals]
@@ -51,7 +50,7 @@ flowchart TD
         
     end
 
-    subgraph Future Components
+    subgraph future["Future Components"]
         Mapper[Mapper Pod<br/>Converts to FHIR]
         SQLite[(SQLite<br/>Persistent Volume)]
         Gateway[Gateway Pod<br/>REST API]
