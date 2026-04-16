@@ -34,7 +34,30 @@ A real-time streaming pipeline that simulates patient breathing data, detects an
 5. **Gateway** exposes REST API:
    - Query observations by patient
    - Returns JSON in standard format
-  
+
+
+## What the ONNX Model Does
+
+The model is a simple neural network (ReduceMean + Sigmoid) that:
+- Takes the 64-dimension audio spectrum as input
+- Outputs a probability between 0 and 1
+- Values > 0.5 are classified as "abnormal"
+
+In a real deployment, this would be replaced with a trained model using actual respiratory audio data.
+
+## Data Flow Example
+
+**Input (simulator to Redis):**
+```json
+{
+  "patient_id": "P42",
+  "timestamp": 1744855200.0,
+  "breathing_rate": 18.3,
+  "audio_spectrum": [0.1, 0.5, ... 64 values],
+  "anomaly": false
+}
+```
+
 ## Architecture Diagram
 ```mermaid
 flowchart TD
@@ -61,3 +84,51 @@ flowchart TD
     end
 
     User([Developer / Client]) -->|curl / browser| Gateway
+```
+## Quick deploy
+# Create K3d cluster
+```bash
+k3d cluster create vitalflow --servers 1 --agents 0 --k3s-arg "--disable=traefik@server:0"
+```
+# Deploy the stack
+```bash
+./deploy.sh
+```
+## Build Images
+```bash
+cd simulator && docker build -t simulator:latest . && cd ..
+cd processor && docker build -t processor:latest . && cd ..
+k3d image import simulator:latest processor:latest --cluster vitalflow
+kubectl rollout restart deployment/simulator processor -n vitalflow
+```
+## View logs
+# Watch simulator generating fake data
+```bash
+kubectl logs -n vitalflow deployment/simulator
+```
+
+# Watch processor detecting anomalies on fake data
+```bash
+kubectl logs -n vitalflow deployment/processor
+```
+
+## Check Status
+```bash
+kubectl get pods -n vitalflow
+kubectl get services -n vitalflow
+```
+
+## Query result
+```bash
+# Port forward to gateway
+kubectl port-forward -n vitalflow svc/gateway 8000:8000
+
+# Query observations for a patient
+curl -H "api-key: test-key-123" "http://localhost:8000/fhir/Observation?patient=P42"
+```
+
+## CleanUp
+```bash
+./cleanup.sh
+k3d cluster delete vitalflow
+```
