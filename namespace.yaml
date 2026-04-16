@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vitalflow
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: vitalflow-quota
+  namespace: vitalflow
+spec:
+  hard:
+    requests.memory: "1.5Gi"
+    limits.memory: "2.5Gi"
