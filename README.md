@@ -102,13 +102,11 @@ k3d image import simulator:latest processor:latest --cluster vitalflow
 kubectl rollout restart deployment/simulator processor -n vitalflow
 ```
 ## View logs
-# Watch simulator generating fake data
 ```bash
+# Watch simulator generating fake data
 kubectl logs -n vitalflow deployment/simulator
-```
 
 # Watch processor detecting anomalies on fake data
-```bash
 kubectl logs -n vitalflow deployment/processor
 ```
 
