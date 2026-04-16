@@ -86,12 +86,11 @@ flowchart TD
     User([Developer / Client]) -->|curl / browser| Gateway
 ```
 ## Quick deploy
+```bash
 # Create K3d cluster
-```bash
 k3d cluster create vitalflow --servers 1 --agents 0 --k3s-arg "--disable=traefik@server:0"
-```
+
 # Deploy the stack
-```bash
 ./deploy.sh
 ```
 ## Build Images
