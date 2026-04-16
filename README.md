@@ -36,7 +36,7 @@ A real-time streaming pipeline that simulates patient breathing data, detects an
    - Returns JSON in standard format
   
 ## Architecture Diagram
-
+```mermaid
 flowchart TD
     subgraph k3d["K3d Cluster (vitalflow)"]
         
